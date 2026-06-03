@@ -1,0 +1,560 @@
+:root {
+    --bg-dark: #0f172a;
+    --bg-card: #1e293b;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --accent-color: #3b82f6;
+    --accent-hover: #2563eb;
+    --border-color: #334155;
+    --success-color: #10b981;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.dashboard-container {
+    width: 100%;
+    max-width: 1000px; /* Ancho optimizado para legibilidad */
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.header-titles h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin-bottom: 0.2rem;
+    background: linear-gradient(90deg, #60a5fa, #a78bfa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.header-titles p {
+    color: var(--text-secondary);
+    font-size: 1rem;
+}
+
+.btn-primary {
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.25rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+}
+
+.btn-primary:hover {
+    background-color: var(--accent-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px -2px rgba(59, 130, 246, 0.4);
+}
+
+.btn-primary:active {
+    transform: translateY(1px);
+}
+
+.chart-card {
+    background-color: var(--bg-card);
+    border-radius: 16px;
+    padding: 1.5rem 2rem 2rem 2rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-color);
+    position: relative;
+    overflow: hidden;
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.chart-header h2 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.badge {
+    background-color: rgba(16, 185, 129, 0.15);
+    color: var(--success-color);
+    padding: 0.35rem 0.85rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.badge::before {
+    content: '';
+    display: block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--success-color);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+    70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+.chart-placeholder {
+    width: 100%;
+    height: 400px;
+}
+
+.empty-state, .error-state {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    text-align: center;
+    font-weight: 500;
+}
+
+.empty-state { color: var(--text-secondary); }
+.error-state { color: #ef4444; }
+
+/* Capa de Carga y Animación (Glassmorphism) */
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(30, 41, 59, 0.65);
+    backdrop-filter: blur(5px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 10;
+}
+
+.loading-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.spinner {
+    width: 45px;
+    height: 45px;
+    border: 4px solid var(--border-color);
+    border-top-color: var(--accent-color);
+    border-radius: 50%;
+    animation: spin 1s cubic-bezier(0.55, 0.15, 0.45, 0.85) infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ========================================================
+   NUEVOS ESTILOS PARA EL DASHBOARD EN TIEMPO REAL
+   ======================================================== */
+
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.kpi-card.highlight {
+    grid-column: 1 / -1;
+}
+
+.kpi-card {
+    min-width: 0;
+    overflow: hidden;
+}
+
+.kpi-card {
+    background: rgba(30, 41, 59, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+}
+
+.kpi-card:hover {
+    transform: translateY(-2px);
+}
+
+.kpi-card.highlight {
+    background: linear-gradient(145deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.9));
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.kpi-card h3 {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+}
+
+.kpi-value {
+    font-family: 'Outfit', sans-serif;
+    font-size: clamp(1.4rem, 2vw, 2rem);
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+#kpi-estado {
+    font-size: 1.35rem;
+    letter-spacing: -0.5px;
+    word-break: break-word;
+}
+
+.kpi-label {
+    font-size: 0.8rem;
+    color: #64748b;
+}
+
+/* Estados de Concentración */
+.state-concentrated {
+    color: #10b981 !important;
+    text-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+}
+
+.state-distracted {
+    color: #ef4444 !important;
+    text-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+}
+
+.state-waiting {
+    color: #f59e0b !important;
+}
+
+.charts-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+/* Live Badge Animado */
+.live-badge {
+    background-color: rgba(239, 68, 68, 0.15) !important;
+    color: #ef4444 !important;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.live-badge::before {
+    display: none; /* Quitamos el dot del badge normal */
+}
+
+.live-badge .dot {
+    width: 6px;
+    height: 6px;
+    background-color: #ef4444;
+    border-radius: 50%;
+    animation: blink 0.8s infinite alternate;
+}
+
+@keyframes blink {
+    0% { opacity: 0.2; }
+    100% { opacity: 1; }
+}
+
+.realtime-card {
+    border-top: 3px solid #ef4444;
+}
+
+/* ========================================================
+   GRID DE 4 MINI GRÁFICAS
+   ======================================================== */
+.mini-charts-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+.chart-header-mini {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.chart-header-mini h2 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.mini-chart {
+    height: 150px !important;
+}
+
+/* ========================================================
+   RESPONSIVE — MÓVIL (≤ 768 px)
+   ======================================================== */
+@media (max-width: 768px) {
+    body {
+        padding: 1rem;
+        /* Respetar muescas (notch) y barras del sistema en iOS/Android */
+        padding-left:  max(1rem, env(safe-area-inset-left));
+        padding-right: max(1rem, env(safe-area-inset-right));
+        padding-bottom: max(1rem, env(safe-area-inset-bottom));
+    }
+
+    .header-titles h1 {
+        font-size: 1.4rem;
+    }
+
+    .header-titles p {
+        font-size: 0.85rem;
+    }
+
+    /* KPI grid: Estado arriba (fila completa) + 3 KPIs en una sola fila */
+    .kpi-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.6rem;
+    }
+
+    /* La tarjeta de Estado ocupa toda la fila */
+    .kpi-card.highlight {
+        grid-column: 1 / -1;
+        grid-row: 1;
+    }
+
+    /* Las otras 3 KPIs forzadas a la segunda fila */
+    .kpi-card:not(.highlight) {
+        grid-row: 2;
+    }
+
+    .kpi-card {
+        padding: 0.75rem 0.5rem;
+    }
+
+    .kpi-card h3 {
+        font-size: 0.72rem;
+    }
+
+    .kpi-value {
+        font-size: clamp(1rem, 4.5vw, 1.4rem);
+    }
+
+    .kpi-label {
+        font-size: 0.68rem;
+    }
+
+    /* Stats strip: permitir scroll horizontal o apilar en 2×2 */
+    .chart-stats {
+        flex-wrap: wrap;
+        gap: 0.5rem 0;
+        padding: 0.65rem 0.75rem;
+    }
+
+    .stat-sep {
+        display: none; /* Quitamos los separadores verticales al envolver */
+    }
+
+    .stat-item {
+        flex: 1 1 40%;
+        padding: 0 0.5rem;
+        min-width: 0;
+    }
+
+    .stat-value {
+        font-size: 1rem;
+    }
+
+    .stat-period {
+        font-size: 0.72rem !important;
+    }
+
+    /* Mini-gráficas: una columna */
+    .mini-charts-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Reducir altura de gráficas en móvil para evitar scroll excesivo */
+    .mini-chart {
+        height: 120px !important;
+    }
+
+    .chart-placeholder {
+        height: 260px;
+    }
+
+    .chart-card {
+        padding: 1rem 1rem 1.25rem 1rem;
+    }
+}
+
+/* ========================================================
+   RESPONSIVE — PANTALLAS MUY PEQUEÑAS (≤ 360 px)
+   ======================================================== */
+@media (max-width: 360px) {
+    .kpi-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.4rem;
+    }
+
+    .kpi-card {
+        padding: 0.6rem 0.3rem;
+    }
+
+    .kpi-card h3 {
+        font-size: 0.65rem;
+    }
+
+    .kpi-value {
+        font-size: clamp(0.85rem, 4vw, 1.1rem);
+    }
+}
+
+/* ========================================================
+   STATS STRIP — resumen sobre la gráfica histórica
+   ======================================================== */
+.chart-stats {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0;
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 0.65rem 1.25rem;
+    margin-bottom: 1.5rem;
+    min-height: 60px;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding: 0 1.25rem;
+}
+.stat-item:first-child { padding-left: 0; }
+
+.stat-label {
+    font-size: 0.68rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.stat-value {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.2;
+}
+
+.conc-val { color: #10b981; }
+.dist-val { color: #ef4444; }
+
+.stat-period {
+    font-size: 0.82rem !important;
+    font-weight: 500 !important;
+    color: var(--text-secondary) !important;
+}
+
+.stat-sep {
+    width: 1px;
+    height: 36px;
+    background: var(--border-color);
+    flex-shrink: 0;
+}
+
+/* ========================================================
+   TOOLTIP — hover sobre barras históricas
+   ======================================================== */
+.flot-tooltip {
+    position: absolute;
+    z-index: 200;
+    background: rgba(15, 23, 42, 0.97);
+    border: 1px solid var(--border-color);
+    border-radius: 9px;
+    padding: 0.65rem 1rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    pointer-events: none;
+    white-space: nowrap;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+    min-width: 180px;
+}
+
+.tt-hour {
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.4rem;
+    margin-bottom: 0.45rem;
+    letter-spacing: 0.03em;
+}
+
+.tt-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.25rem;
+}
+
+.tt-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.tt-label {
+    color: var(--text-secondary);
+    flex: 1;
+}
+
+.tt-val {
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* Leyenda Flot sobre fondo oscuro */
+.legend table { font-family: 'Inter', sans-serif; font-size: 0.8rem; }
+.legend .legendLabel { color: #f8fafc !important; padding-left: 0.4rem; }
+.legend .legendColorBox > div { border-color: transparent !important; }

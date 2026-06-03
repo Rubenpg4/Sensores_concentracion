@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Dashboard de Concentración | WSN Sensors</title>
+
+    <!-- PWA: manifest e iconos -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+
+    <!-- PWA: meta tags de integración móvil -->
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Concentración">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Concentración">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=8">
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flot/0.8.3/jquery.flot.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flot/0.8.3/jquery.flot.time.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flot/0.8.3/jquery.flot.resize.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flot/0.8.3/jquery.flot.stack.min.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <header>
+            <div class="header-titles">
+                <h1>Dashboard de Concentración</h1>
+                <p>Sensor Fusion: Gravedad, Giroscopio, Ruido y Acelerómetro</p>
+            </div>
+        </header>
+
+        <!-- KPI Grid Superior -->
+        <div class="kpi-grid">
+            <div class="kpi-card highlight">
+                <h3>Estado Actual</h3>
+                <div id="kpi-estado" class="kpi-value state-waiting">ESPERANDO...</div>
+                <div class="kpi-label">Fusión de los 4 sensores</div>
+            </div>
+            <div class="kpi-card">
+                <h3>Ruido</h3>
+                <div id="kpi-ruido" class="kpi-value">-- dBFS</div>
+                <div class="kpi-label">Micrófono</div>
+            </div>
+            <div class="kpi-card">
+                <h3>Rotación</h3>
+                <div id="kpi-varianza" class="kpi-value">--</div>
+                <div class="kpi-label">Giroscopio</div>
+            </div>
+            <div class="kpi-card">
+                <h3>Brillo</h3>
+                <div id="kpi-brillo" class="kpi-value">--</div>
+                <div class="kpi-label">Pantalla</div>
+            </div>
+        </div>
+
+        <div class="charts-container">
+            
+            <!-- GRID DE 4 MINI-OSCILOSCOPIOS -->
+            <div class="mini-charts-grid">
+                
+                <div class="chart-card realtime-card">
+                    <div class="chart-header-mini">
+                        <h2>🔊 Micrófono (Ruido)</h2>
+                        <span class="badge live-badge"><span class="dot"></span></span>
+                    </div>
+                    <div id="mic-chart" class="chart-placeholder mini-chart"></div>
+                </div>
+
+                <div class="chart-card realtime-card">
+                    <div class="chart-header-mini">
+                        <h2>🔄 Giroscopio (Rotación)</h2>
+                        <span class="badge live-badge"><span class="dot"></span></span>
+                    </div>
+                    <div id="gyro-chart" class="chart-placeholder mini-chart"></div>
+                </div>
+
+                <div class="chart-card realtime-card">
+                    <div class="chart-header-mini">
+                        <h2>⚖️ Gravedad Z (Orientación)</h2>
+                        <span class="badge live-badge"><span class="dot"></span></span>
+                    </div>
+                    <div id="gravity-chart" class="chart-placeholder mini-chart"></div>
+                </div>
+
+                <div class="chart-card realtime-card">
+                    <div class="chart-header-mini">
+                        <h2>📈 Acelerómetro (Movimiento)</h2>
+                        <span class="badge live-badge"><span class="dot"></span></span>
+                    </div>
+                    <div id="accel-chart" class="chart-placeholder mini-chart"></div>
+                </div>
+
+            </div>
+
+            <!-- Tarjeta de la gráfica principal diaria -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h2>Minutos de concentración profunda diarios</h2>
+                    <span class="badge">Histórico</span>
+                </div>
+                <div id="chart-stats" class="chart-stats"></div>
+                <div id="concentration-chart" class="chart-placeholder"></div>
+                <div id="loading-overlay" class="loading-overlay">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js?v=11"></script>
+
+    <!-- Registro del Service Worker (PWA) -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('[SW] Registrado. Scope:', reg.scope))
+                    .catch(err => console.warn('[SW] Error al registrar:', err));
+            });
+        }
+    </script>
+</body>
+</html>
